@@ -38,6 +38,39 @@
     .stripe i, .rule i { flex: 1; display: block; }
     .r { background: var(--red); } .g { background: var(--gold); } .n { background: var(--green); }
     .frame { position: absolute; inset: 14px 12px 12px; border: 1px solid rgba(196,163,90,.55); pointer-events: none; z-index: 7; }
+    .yt-hold { position: absolute; width: 1px; height: 1px; left: 0; bottom: 0; overflow: hidden; opacity: 0; pointer-events: none; clip-path: inset(50%); }
+    .music {
+      position: absolute; left: 18px; bottom: 22px; z-index: 9;
+      display: inline-flex; align-items: center; gap: 8px; min-height: 44px;
+      padding: 8px 14px 8px 10px; border: 2px solid var(--gold); border-radius: 999px;
+      background: rgba(243,230,208,.92); color: var(--ink);
+      font-family: "Cormorant Garamond", Georgia, serif; font-size: 13px; font-weight: 700;
+      letter-spacing: .14em; text-transform: uppercase;
+      box-shadow: 0 8px 18px rgba(40,32,24,.18); backdrop-filter: blur(8px);
+      -webkit-tap-highlight-color: transparent; touch-action: manipulation;
+      transition: transform .15s ease-out, background .2s ease, box-shadow .2s ease, color .2s ease;
+    }
+    .music:hover { background: #f7efe0; }
+    .music:active { transform: scale(.96); }
+    .card.on-finale .music {
+      left: auto; right: 18px; bottom: auto; top: 22px;
+      background: rgba(58,50,40,.82); color: #f6eee0;
+      box-shadow: 0 8px 18px rgba(40,32,24,.35);
+    }
+    .music-icon { position: relative; width: 18px; height: 18px; flex: 0 0 18px; }
+    .music-icon svg {
+      position: absolute; inset: 0; width: 18px; height: 18px;
+      transition: opacity .3s cubic-bezier(.2,0,0,1), transform .3s cubic-bezier(.2,0,0,1), filter .3s cubic-bezier(.2,0,0,1);
+    }
+    .ico-pause { opacity: 0; transform: scale(.25); filter: blur(4px); }
+    .music.on .ico-note { opacity: 0; transform: scale(.25); filter: blur(4px); }
+    .music.on .ico-pause { opacity: 1; transform: scale(1); filter: blur(0); }
+    .eq { display: none; align-items: flex-end; gap: 2px; height: 12px; width: 10px; }
+    .music.on .eq { display: inline-flex; }
+    .eq i { display: block; width: 2px; height: 6px; border-radius: 2px; background: currentColor; animation: eq .9s ease-in-out infinite; }
+    .eq i:nth-child(2) { height: 11px; animation-delay: .18s; }
+    .eq i:nth-child(3) { height: 7px; animation-delay: .36s; }
+    @keyframes eq { 0%,100% { transform: scaleY(.45); } 50% { transform: scaleY(1); } }
     .ocean { position: absolute; inset: 0; z-index: 1; pointer-events: none; overflow: hidden; transition: opacity .45s ease, visibility .45s ease; }
     .card.on-finale .ocean { opacity: 0; visibility: hidden; }
     .sky { position: absolute; inset: 0 0 40%; }
@@ -117,7 +150,7 @@
     @keyframes chev { 0%,100% { opacity: .3; transform: rotate(45deg) translate(-3px,-3px); } 50% { opacity: 1; transform: rotate(45deg) translate(2px,2px); } }
     @media (prefers-reduced-motion: reduce) {
       .group { opacity: 1; transform: none; }
-      .hint b, .cta, .cta::before, .spark, .bubble { animation: none; }
+      .hint b, .cta, .cta::before, .spark, .bubble, .eq i { animation: none; }
       .scroller { scroll-behavior: auto; }
     }
   </style>
@@ -140,6 +173,15 @@
         <div class="splash" id="splash"><i></i><i></i><i></i><i></i><i></i></div>
         <span class="bubble x"></span><span class="bubble y"></span><span class="bubble z"></span>
       </div>
+      <div class="yt-hold" aria-hidden="true"><div id="yt-audio"></div></div>
+      <button type="button" class="music" id="music" aria-pressed="false" aria-label="Play music">
+        <span class="music-icon" aria-hidden="true">
+          <svg class="ico-note" viewBox="0 0 24 24" fill="currentColor"><path d="M9 5.2v10.1a3.2 3.2 0 1 0 1.8 2.9V9.4l8.2-1.5v6.4a3.2 3.2 0 1 0 1.8 2.9V3.6L9 5.2z"/></svg>
+          <svg class="ico-pause" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4.2" height="14" rx="1.2"/><rect x="13.8" y="5" width="4.2" height="14" rx="1.2"/></svg>
+        </span>
+        <span class="music-label" id="music-label">Play music</span>
+        <span class="eq" aria-hidden="true"><i></i><i></i><i></i></span>
+      </button>
       <div class="scroller" id="scroller">
         <section class="panel on" data-panel>
           <div class="group">
@@ -222,6 +264,81 @@
       requestAnimationFrame(paint);
     }
     requestAnimationFrame(paint);
+
+    const CLIP_START = 25;
+    const CLIP_END = 60;
+    const YT_ID = "M3vvXefjI_E";
+    const musicBtn = document.getElementById("music");
+    const musicLabel = document.getElementById("music-label");
+    let player = null;
+    let wantPlay = false;
+    function setPlaying(on) {
+      wantPlay = on;
+      musicBtn.classList.toggle("on", on);
+      musicBtn.setAttribute("aria-pressed", on ? "true" : "false");
+      musicBtn.setAttribute("aria-label", on ? "Pause music" : "Play music");
+      musicLabel.textContent = on ? "Pause" : "Play music";
+    }
+    function playClip() {
+      if (!player) return;
+      try {
+        const t = player.getCurrentTime();
+        if (isNaN(t) || t < CLIP_START || t >= CLIP_END - 0.2) player.seekTo(CLIP_START, true);
+        player.playVideo();
+      } catch (e) {
+        player.playVideo();
+      }
+    }
+    function keepClip() {
+      if (!player || !wantPlay) return;
+      try {
+        const t = player.getCurrentTime();
+        if (t >= CLIP_END - 0.12 || t < CLIP_START - 0.4) {
+          player.seekTo(CLIP_START, true);
+          player.playVideo();
+        }
+      } catch (e) {}
+    }
+    function bootPlayer() {
+      player = new YT.Player("yt-audio", {
+        videoId: YT_ID,
+        width: 1,
+        height: 1,
+        host: "https://www.youtube-nocookie.com",
+        playerVars: {
+          autoplay: 0, controls: 0, disablekb: 1, fs: 0,
+          modestbranding: 1, playsinline: 1, rel: 0,
+          start: CLIP_START, end: CLIP_END, origin: location.origin
+        },
+        events: {
+          onReady: function () {
+            try { player.setVolume(72); } catch (e) {}
+            if (wantPlay) playClip();
+          },
+          onStateChange: function (e) {
+            if (e.data === 0 && wantPlay) {
+              player.seekTo(CLIP_START, true);
+              player.playVideo();
+            }
+          }
+        }
+      });
+      setInterval(keepClip, 220);
+    }
+    window.onYouTubeIframeAPIReady = bootPlayer;
+    if (window.YT && YT.Player) bootPlayer();
+    else {
+      const tag = document.createElement("script");
+      tag.src = "https://www.youtube.com/iframe_api";
+      tag.async = true;
+      document.head.appendChild(tag);
+    }
+    musicBtn.addEventListener("click", function () {
+      setPlaying(!wantPlay);
+      if (!player) return;
+      if (wantPlay) playClip();
+      else player.pauseVideo();
+    });
   </script>
 </body>
 </html>
