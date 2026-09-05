@@ -2,10 +2,200 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>The first Shisler born on Guam</title>
+  <meta name="description" content="We are so excited to announce the arrival of the first Shisler born on Guam. We would love any and all support." />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="The first Shisler born on Guam" />
+  <meta property="og:description" content="We are so excited to announce the arrival! Gift registry inside." />
+  <meta property="og:image" content="https://shisler-baby-card.vercel.app/og.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;1,500&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --ink: #3a3228; --muted: #6d6256; --gold: #c4a35a; --red: #c45c4a;
+      --green: #24703a; --paper: #f3e6d0; --cyan: #2eb3c4;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      min-height: 100dvh;
+      font-family: "Source Sans 3", system-ui, sans-serif;
+      color: var(--ink); background: #d9c4a4;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .stage { width: min(430px, 100%); height: 100dvh; height: 100svh; }
+    .card {
+      position: relative; height: 100%; overflow: hidden;
+      background: radial-gradient(120% 80% at 50% 0%, #f8ecda 0%, var(--paper) 55%, #ead6b6 100%);
+      box-shadow: 0 18px 50px rgba(70, 50, 20, .22);
+    }
+    .stripe { position: absolute; top: 0; left: 0; right: 0; height: 7px; z-index: 5; display: flex; }
+    .stripe i { flex: 1; display: block; }
+    .stripe .r { background: var(--red); }
+    .stripe .g { background: var(--gold); }
+    .stripe .n { background: var(--green); }
+    .frame {
+      position: absolute; inset: 14px 12px 12px;
+      border: 1px solid rgba(196,163,90,.5);
+      pointer-events: none; z-index: 4;
+    }
+    .bg { position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+    .water {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 210px;
+      background: linear-gradient(180deg, transparent, rgba(46,179,196,.08) 45%, rgba(36,112,58,.12));
+    }
+    .palms {
+      position: absolute; left: -6%; right: -6%; bottom: -2%;
+      width: 112%; height: 58%;
+      transform-origin: 50% 100%;
+      animation: palm-sway 7.2s ease-in-out infinite;
+    }
+    .palms img {
+      width: 100%; height: 100%; object-fit: contain; object-position: center bottom;
+      display: block;
+    }
+    .shark {
+      position: absolute; left: 8%; bottom: 6%;
+      width: 84%; height: 26%;
+      transform-origin: 40% 60%;
+      animation: shark-drift 8s ease-in-out infinite;
+      filter: drop-shadow(0 8px 12px rgba(20,70,80,.18));
+    }
+    .shark img {
+      width: 100%; height: 100%; object-fit: contain; object-position: center;
+      display: block;
+    }
+    @keyframes palm-sway {
+      0%,100% { transform: rotate(-1.15deg); }
+      50% { transform: rotate(1.45deg); }
+    }
+    @keyframes shark-drift {
+      0%,100% { transform: translate(0,0) rotate(-1deg); }
+      50% { transform: translate(8px,-6px) rotate(1.2deg); }
+    }
+    .scroller {
+      position: relative; z-index: 2; height: 100%;
+      overflow-y: auto; scroll-snap-type: y mandatory;
+      scroll-behavior: smooth; -webkit-overflow-scrolling: touch;
+    }
+    .panel {
+      min-height: 100%;
+      scroll-snap-align: start; scroll-snap-stop: always;
+      display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+      text-align: center; padding: 52px 28px 210px;
+    }
+    .panel.finale { position: relative; justify-content: flex-end; padding: 24px 24px 36px; }
+    .finale-photo {
+      position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
+      -webkit-mask-image: radial-gradient(ellipse at 50% 38%, #000 38%, rgba(0,0,0,.78) 62%, transparent 88%);
+      mask-image: radial-gradient(ellipse at 50% 38%, #000 38%, rgba(0,0,0,.78) 62%, transparent 88%);
+    }
+    .finale-photo img {
+      width: 100%; height: 100%; object-fit: cover; object-position: 50% 18%;
+      transform: scale(1.06);
+    }
+    .finale-photo::after {
+      content: ""; position: absolute; inset: 0;
+      background: linear-gradient(180deg,
+        rgba(243,230,208,.55) 0%,
+        rgba(243,230,208,.08) 12%,
+        rgba(243,230,208,0) 28%,
+        rgba(243,230,208,.02) 56%,
+        rgba(243,230,208,.38) 78%,
+        rgba(243,230,208,.88) 100%);
+    }
+    .panel.finale .group { position: relative; z-index: 1; }
+    .group { opacity: 0; transform: translateY(18px); transition: opacity .7s ease, transform .7s ease; width: 100%; }
+    .panel.on .group { opacity: 1; transform: none; }
+    .kicker { font-size: 11px; letter-spacing: .28em; text-transform: uppercase; color: var(--gold); font-weight: 600; margin-bottom: 12px; font-family: "Cormorant Garamond", Georgia, serif; }
+    h1 { font-family: "Cormorant Garamond", Georgia, serif; font-weight: 500; font-size: clamp(40px, 12.5vw, 54px); line-height: 1.04; }
+    .rule { display: flex; width: 100%; height: 5px; margin: 22px 0 16px; }
+    .rule i { flex: 1; height: 5px; display: block; }
+    .rule .r { background: var(--red); }
+    .rule .g { background: var(--gold); }
+    .rule .n { background: var(--green); }
+    .line { font-family: "Cormorant Garamond", Georgia, serif; font-style: italic; font-size: clamp(28px, 8.4vw, 36px); line-height: 1.22; max-width: 14em; margin: 0 auto; }
+    .support { margin: 22px auto 0; font-family: "Cormorant Garamond", Georgia, serif; font-size: clamp(22px, 6.2vw, 28px); color: var(--ink); line-height: 1.3; max-width: 16em; }
+    .when { font-family: "Cormorant Garamond", Georgia, serif; font-size: 18px; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); text-shadow: 0 1px 0 rgba(243,230,208,.95), 0 8px 18px rgba(243,230,208,.7); }
+    .cta {
+      display: inline-block; margin-top: 18px; background: #3a3228; color: #f6eee0;
+      text-decoration: none; padding: 18px 34px; font-size: 15px; letter-spacing: .16em;
+      text-transform: uppercase; font-weight: 600; border-radius: 999px;
+      box-shadow: 0 0 0 2px var(--gold), 0 10px 24px rgba(58,50,40,.28); min-height: 48px;
+      position: relative; z-index: 2;
+    }
+    .fine { margin-top: 12px; font-size: 16px; color: var(--muted); font-family: "Cormorant Garamond", Georgia, serif; text-shadow: 0 1px 0 rgba(243,230,208,.95); }
+    .hint { margin-top: 18px; text-align: center; font-family: "Cormorant Garamond", Georgia, serif; font-size: 13px; letter-spacing: .22em; text-transform: uppercase; color: var(--muted); }
+    .hint b {
+      display: block; width: 10px; height: 10px; margin: 10px auto 0;
+      border-right: 1.5px solid var(--gold); border-bottom: 1.5px solid var(--gold);
+      transform: rotate(45deg); animation: chev 1.6s ease-in-out infinite;
+    }
+    @keyframes chev {
+      0%,100% { opacity: .3; transform: rotate(45deg) translate(-3px,-3px); }
+      50% { opacity: 1; transform: rotate(45deg) translate(2px,2px); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .group { opacity: 1; transform: none; }
+      .hint b { animation: none; }
+      .scroller { scroll-behavior: auto; }
+      .palms, .shark { animation: none; }
+    }
+  </style>
 </head>
 <body>
-  <!-- full file lives in artifacts and on Vercel; do not replace production with this stub -->
-  <p>See https://shisler-baby-card.vercel.app/</p>
+  <div class="stage">
+    <article class="card">
+      <div class="stripe" aria-hidden="true"><i class="r"></i><i class="g"></i><i class="n"></i></div>
+      <div class="frame"></div>
+      <div class="bg" aria-hidden="true">
+        <div class="water"></div>
+        <div class="palms">
+          <img src="palms.webp" alt="" />
+        </div>
+        <div class="shark">
+          <img src="shark.webp" alt="" />
+        </div>
+      </div>
+      <div class="scroller" id="scroller">
+        <section class="panel on" data-panel>
+          <div class="group">
+            <p class="kicker">A little island news</p>
+            <h1>The first<br>Shisler born<br>on Guam</h1>
+            <div class="rule"><i class="r"></i><i class="g"></i><i class="n"></i></div>
+            <p class="hint">Keep scrolling<b></b></p>
+          </div>
+        </section>
+        <section class="panel" data-panel>
+          <div class="group">
+            <p class="line">We are so excited to announce the arrival!</p>
+            <p class="support">We would love any and all support — a note, a prayer, or a gift from the registry if that is easy for you!</p>
+            <p class="hint">Keep scrolling<b></b></p>
+          </div>
+        </section>
+        <section class="panel finale" data-panel>
+          <div class="finale-photo" aria-hidden="true">
+            <img src="portrait.jpg" alt="" />
+          </div>
+          <div class="group">
+            <p class="when">November 2026 · Guåhan</p>
+            <a class="cta" href="https://www.amazon.com/baby-reg/ryan-shisler-october-2026-talofofo/388HK8HF0Q0DZ?ref_=cm_sw_r_apann_dp_VESDWS20WCT4361KP9RY&amp;language=en-US">Open gift registry</a>
+            <p class="fine">Amazon Baby Registry</p>
+          </div>
+        </section>
+      </div>
+    </article>
+  </div>
+  <script>
+    const scroller = document.getElementById("scroller");
+    const panels = [...document.querySelectorAll("[data-panel]")];
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => { if (e.isIntersecting) e.target.classList.add("on"); });
+    }, { root: scroller, threshold: 0.55 });
+    panels.forEach((p) => io.observe(p));
+  </script>
 </body>
 </html>
