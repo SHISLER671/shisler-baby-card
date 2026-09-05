@@ -15,69 +15,55 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;1,500&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --ink: #3a3228; --muted: #6d6256; --gold: #c4a35a; --red: #c45c4a;
-      --green: #24703a; --paper: #f3e6d0; --cyan: #2eb3c4;
+      --ink: #3a3228; --muted: #6d6256; --gold: #c4a35a;
+      --red: #c45c4a; --green: #24703a; --paper: #f3e6d0; --cyan: #2eb3c4;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { height: 100%; }
     body {
       min-height: 100dvh;
       font-family: "Source Sans 3", system-ui, sans-serif;
-      color: var(--ink); background: #d9c4a4;
+      color: var(--ink); background: #cbb896;
       display: flex; align-items: center; justify-content: center;
     }
     .stage { width: min(430px, 100%); height: 100dvh; height: 100svh; }
     .card {
       position: relative; height: 100%; overflow: hidden;
-      background: radial-gradient(120% 80% at 50% 0%, #f8ecda 0%, var(--paper) 55%, #ead6b6 100%);
+      background: var(--paper) url("paper.jpg") center / cover no-repeat;
       box-shadow: 0 18px 50px rgba(70, 50, 20, .22);
     }
-    .stripe { position: absolute; top: 0; left: 0; right: 0; height: 7px; z-index: 5; display: flex; }
+    .stripe { position: absolute; top: 0; left: 0; right: 0; height: 7px; z-index: 8; display: flex; }
     .stripe i { flex: 1; display: block; }
     .stripe .r { background: var(--red); }
     .stripe .g { background: var(--gold); }
     .stripe .n { background: var(--green); }
     .frame {
       position: absolute; inset: 14px 12px 12px;
-      border: 1px solid rgba(196,163,90,.5);
-      pointer-events: none; z-index: 4;
+      border: 1px solid rgba(196,163,90,.55);
+      pointer-events: none; z-index: 7;
     }
-    .bg { position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
-    .water {
-      position: absolute; left: 0; right: 0; bottom: 0; height: 210px;
-      background: linear-gradient(180deg, transparent, rgba(46,179,196,.08) 45%, rgba(36,112,58,.12));
+    .art {
+      position: absolute; inset: 0; z-index: 1; pointer-events: none; overflow: hidden;
     }
-    .palms {
-      position: absolute; left: -6%; right: -6%; bottom: -2%;
-      width: 112%; height: 58%;
-      transform-origin: 50% 100%;
-      animation: palm-sway 7.2s ease-in-out infinite;
-    }
-    .palms img {
-      width: 100%; height: 100%; object-fit: contain; object-position: center bottom;
-      display: block;
-    }
+    .card.on-finale .art { visibility: hidden; opacity: 0; }
     .shark {
       position: absolute; left: 8%; bottom: 6%;
-      width: 84%; height: 26%;
-      transform-origin: 40% 60%;
-      animation: shark-drift 8s ease-in-out infinite;
-      filter: drop-shadow(0 8px 12px rgba(20,70,80,.18));
+      width: 86%; height: auto;
+      filter: drop-shadow(0 10px 14px rgba(20,40,50,.16));
+      will-change: transform, opacity;
+      transform-origin: 50% 80%;
     }
-    .shark img {
-      width: 100%; height: 100%; object-fit: contain; object-position: center;
-      display: block;
-    }
-    @keyframes palm-sway {
-      0%,100% { transform: rotate(-1.15deg); }
-      50% { transform: rotate(1.45deg); }
-    }
-    @keyframes shark-drift {
-      0%,100% { transform: translate(0,0) rotate(-1deg); }
-      50% { transform: translate(8px,-6px) rotate(1.2deg); }
+    .palms {
+      position: absolute; left: -8%; right: -8%; bottom: -2%;
+      width: 116%; height: 62%;
+      object-fit: contain; object-position: center bottom;
+      opacity: 0;
+      transform-origin: 50% 100%;
+      will-change: transform, opacity;
+      filter: drop-shadow(0 8px 12px rgba(30,50,20,.12));
     }
     .scroller {
-      position: relative; z-index: 2; height: 100%;
+      position: relative; z-index: 3; height: 100%;
       overflow-y: auto; scroll-snap-type: y mandatory;
       scroll-behavior: smooth; -webkit-overflow-scrolling: touch;
     }
@@ -85,50 +71,104 @@
       min-height: 100%;
       scroll-snap-align: start; scroll-snap-stop: always;
       display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
-      text-align: center; padding: 52px 28px 210px;
+      text-align: center; padding: 52px 28px 240px;
+      position: relative;
     }
-    .panel.finale { position: relative; justify-content: flex-end; padding: 24px 24px 36px; }
+    .panel.finale {
+      justify-content: flex-end;
+      padding: 24px 24px 34px;
+      background: #1c1814;
+    }
     .finale-photo {
-      position: absolute; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
-      -webkit-mask-image: radial-gradient(ellipse at 50% 38%, #000 38%, rgba(0,0,0,.78) 62%, transparent 88%);
-      mask-image: radial-gradient(ellipse at 50% 38%, #000 38%, rgba(0,0,0,.78) 62%, transparent 88%);
+      position: absolute; inset: 0; z-index: 0; overflow: hidden;
+      background: #1c1814;
     }
     .finale-photo img {
       width: 100%; height: 100%; object-fit: cover; object-position: 50% 18%;
-      transform: scale(1.06);
+      display: block;
     }
     .finale-photo::after {
       content: ""; position: absolute; inset: 0;
       background: linear-gradient(180deg,
-        rgba(243,230,208,.55) 0%,
-        rgba(243,230,208,.08) 12%,
-        rgba(243,230,208,0) 28%,
-        rgba(243,230,208,.02) 56%,
-        rgba(243,230,208,.38) 78%,
-        rgba(243,230,208,.88) 100%);
+        rgba(28,24,20,.12) 0%,
+        rgba(28,24,20,0) 30%,
+        rgba(28,24,20,.08) 58%,
+        rgba(28,24,20,.55) 82%,
+        rgba(28,24,20,.82) 100%);
     }
-    .panel.finale .group { position: relative; z-index: 1; }
+    .panel.finale .group { position: relative; z-index: 2; }
     .group { opacity: 0; transform: translateY(18px); transition: opacity .7s ease, transform .7s ease; width: 100%; }
     .panel.on .group { opacity: 1; transform: none; }
-    .kicker { font-size: 11px; letter-spacing: .28em; text-transform: uppercase; color: var(--gold); font-weight: 600; margin-bottom: 12px; font-family: "Cormorant Garamond", Georgia, serif; }
-    h1 { font-family: "Cormorant Garamond", Georgia, serif; font-weight: 500; font-size: clamp(40px, 12.5vw, 54px); line-height: 1.04; }
+    .kicker {
+      font-size: 11px; letter-spacing: .28em; text-transform: uppercase;
+      color: var(--gold); font-weight: 600; margin-bottom: 12px;
+      font-family: "Cormorant Garamond", Georgia, serif;
+    }
+    h1 {
+      font-family: "Cormorant Garamond", Georgia, serif; font-weight: 500;
+      font-size: clamp(40px, 12.5vw, 54px); line-height: 1.04;
+    }
     .rule { display: flex; width: 100%; height: 5px; margin: 22px 0 16px; }
     .rule i { flex: 1; height: 5px; display: block; }
     .rule .r { background: var(--red); }
     .rule .g { background: var(--gold); }
     .rule .n { background: var(--green); }
-    .line { font-family: "Cormorant Garamond", Georgia, serif; font-style: italic; font-size: clamp(28px, 8.4vw, 36px); line-height: 1.22; max-width: 14em; margin: 0 auto; }
-    .support { margin: 22px auto 0; font-family: "Cormorant Garamond", Georgia, serif; font-size: clamp(22px, 6.2vw, 28px); color: var(--ink); line-height: 1.3; max-width: 16em; }
-    .when { font-family: "Cormorant Garamond", Georgia, serif; font-size: 18px; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); text-shadow: 0 1px 0 rgba(243,230,208,.95), 0 8px 18px rgba(243,230,208,.7); }
+    .line {
+      font-family: "Cormorant Garamond", Georgia, serif; font-style: italic;
+      font-size: clamp(28px, 8.4vw, 36px); line-height: 1.22;
+      max-width: 14em; margin: 0 auto;
+    }
+    .support {
+      margin: 22px auto 0;
+      font-family: "Cormorant Garamond", Georgia, serif;
+      font-size: clamp(22px, 6.2vw, 28px); color: var(--ink); line-height: 1.3; max-width: 16em;
+    }
+    .when {
+      font-family: "Cormorant Garamond", Georgia, serif; font-size: 18px;
+      letter-spacing: .18em; text-transform: uppercase; color: #f3e6d0;
+    }
     .cta {
-      display: inline-block; margin-top: 18px; background: #3a3228; color: #f6eee0;
+      display: inline-block; margin-top: 16px;
+      background: #f6eee0; color: #3a3228;
       text-decoration: none; padding: 18px 34px; font-size: 15px; letter-spacing: .16em;
       text-transform: uppercase; font-weight: 600; border-radius: 999px;
-      box-shadow: 0 0 0 2px var(--gold), 0 10px 24px rgba(58,50,40,.28); min-height: 48px;
-      position: relative; z-index: 2;
+      box-shadow: 0 0 0 2px var(--gold), 0 10px 24px rgba(0,0,0,.28);
+      min-height: 48px; position: relative; z-index: 3; overflow: hidden;
+      transition: transform .2s ease, background .2s ease, box-shadow .2s ease;
     }
-    .fine { margin-top: 12px; font-size: 16px; color: var(--muted); font-family: "Cormorant Garamond", Georgia, serif; text-shadow: 0 1px 0 rgba(243,230,208,.95); }
-    .hint { margin-top: 18px; text-align: center; font-family: "Cormorant Garamond", Georgia, serif; font-size: 13px; letter-spacing: .22em; text-transform: uppercase; color: var(--muted); }
+    .cta::before {
+      content: ""; position: absolute; inset: 0;
+      background: linear-gradient(110deg, transparent 30%, rgba(255,255,255,.45) 48%, transparent 66%);
+      transform: translateX(-120%);
+    }
+    .card.on-finale .cta {
+      animation: cta-breathe 2.4s ease-in-out infinite, cta-pop .7s ease 1;
+    }
+    .card.on-finale .cta::before { animation: cta-sheen 3.2s ease-in-out infinite; }
+    .cta:hover { transform: scale(1.05); background: #fff8ec; }
+    .cta:active { transform: scale(.97); animation: none; }
+    @keyframes cta-breathe {
+      0%,100% { box-shadow: 0 0 0 2px var(--gold), 0 10px 24px rgba(0,0,0,.28); }
+      50% { box-shadow: 0 0 0 8px rgba(196,163,90,.38), 0 16px 34px rgba(0,0,0,.36); }
+    }
+    @keyframes cta-sheen {
+      0%, 55% { transform: translateX(-120%); }
+      75%,100% { transform: translateX(120%); }
+    }
+    @keyframes cta-pop {
+      0% { transform: scale(.9); }
+      60% { transform: scale(1.07); }
+      100% { transform: scale(1); }
+    }
+    .fine {
+      margin-top: 12px; font-size: 16px; color: #e8d9be;
+      font-family: "Cormorant Garamond", Georgia, serif;
+    }
+    .hint {
+      margin-top: 18px; text-align: center;
+      font-family: "Cormorant Garamond", Georgia, serif;
+      font-size: 13px; letter-spacing: .22em; text-transform: uppercase; color: var(--muted);
+    }
     .hint b {
       display: block; width: 10px; height: 10px; margin: 10px auto 0;
       border-right: 1.5px solid var(--gold); border-bottom: 1.5px solid var(--gold);
@@ -140,25 +180,19 @@
     }
     @media (prefers-reduced-motion: reduce) {
       .group { opacity: 1; transform: none; }
-      .hint b { animation: none; }
+      .hint b, .cta, .cta::before { animation: none; }
       .scroller { scroll-behavior: auto; }
-      .palms, .shark { animation: none; }
     }
   </style>
 </head>
 <body>
   <div class="stage">
-    <article class="card">
+    <article class="card" id="card">
       <div class="stripe" aria-hidden="true"><i class="r"></i><i class="g"></i><i class="n"></i></div>
       <div class="frame"></div>
-      <div class="bg" aria-hidden="true">
-        <div class="water"></div>
-        <div class="palms">
-          <img src="palms.webp" alt="" />
-        </div>
-        <div class="shark">
-          <img src="shark.webp" alt="" />
-        </div>
+      <div class="art" aria-hidden="true">
+        <img class="palms" id="palms" src="palms.webp" alt="" />
+        <img class="shark" id="shark" src="shark.webp" alt="" />
       </div>
       <div class="scroller" id="scroller">
         <section class="panel on" data-panel>
@@ -177,12 +211,12 @@
           </div>
         </section>
         <section class="panel finale" data-panel>
-          <div class="finale-photo" aria-hidden="true">
-            <img src="portrait.jpg" alt="" />
+          <div class="finale-photo">
+            <img src="portrait.jpg" alt="Ryan and Pia" />
           </div>
           <div class="group">
             <p class="when">November 2026 · Guåhan</p>
-            <a class="cta" href="https://www.amazon.com/baby-reg/ryan-shisler-october-2026-talofofo/388HK8HF0Q0DZ?ref_=cm_sw_r_apann_dp_VESDWS20WCT4361KP9RY&language=en-US">Open gift registry</a>
+            <a class="cta" id="cta" href="https://www.amazon.com/baby-reg/ryan-shisler-october-2026-talofofo/388HK8HF0Q0DZ?ref_=cm_sw_r_apann_dp_VESDWS20WCT4361KP9RY&language=en-US">Open gift registry</a>
             <p class="fine">Amazon Baby Registry</p>
           </div>
         </section>
@@ -190,12 +224,66 @@
     </article>
   </div>
   <script>
+    const card = document.getElementById("card");
     const scroller = document.getElementById("scroller");
+    const shark = document.getElementById("shark");
+    const palms = document.getElementById("palms");
+    const cta = document.getElementById("cta");
     const panels = [...document.querySelectorAll("[data-panel]")];
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
     const io = new IntersectionObserver((entries) => {
       entries.forEach((e) => { if (e.isIntersecting) e.target.classList.add("on"); });
     }, { root: scroller, threshold: 0.55 });
     panels.forEach((p) => io.observe(p));
+
+    const clamp = (n, a, b) => Math.min(b, Math.max(a, n));
+
+    function paint() {
+      const h = scroller.clientHeight || 1;
+      const p = scroller.scrollTop / h;
+      const onFinale = p > 1.55;
+      card.classList.toggle("on-finale", onFinale);
+
+      if (reduce) {
+        shark.style.opacity = p < 0.85 ? "1" : "0";
+        shark.style.transform = "translateX(0)";
+        palms.style.opacity = (p >= 0.7 && p < 1.55) ? "1" : "0";
+        palms.style.transform = "rotate(0deg)";
+        return;
+      }
+
+      const sharkT = clamp(p / 1.05, 0, 1);
+      const sharkX = 22 - sharkT * 58;
+      let sharkO = 1;
+      if (p > 0.92) sharkO = clamp(1 - (p - 0.92) / 0.38, 0, 1);
+      shark.style.opacity = String(sharkO);
+      shark.style.transform = "translateX(" + sharkX + "%)";
+
+      let palmO = 0;
+      if (p > 0.55 && p < 1.05) palmO = (p - 0.55) / 0.5;
+      else if (p >= 1.05 && p < 1.48) palmO = 1;
+      else if (p >= 1.48) palmO = clamp(1 - (p - 1.48) / 0.22, 0, 1);
+      const palmR = Math.sin(p * 3.4) * 2.8;
+      const palmS = 1 + Math.sin(p * 2.2) * 0.012;
+      palms.style.opacity = String(clamp(palmO, 0, 1));
+      palms.style.transform = "rotate(" + palmR + "deg) scale(" + palmS + ")";
+
+      if (onFinale) {
+        const into = clamp((p - 1.55) / 0.45, 0, 1);
+        cta.style.transform = "scale(" + (0.96 + into * 0.04) + ")";
+      } else {
+        cta.style.transform = "";
+      }
+    }
+
+    let ticking = false;
+    scroller.addEventListener("scroll", () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => { paint(); ticking = false; });
+    }, { passive: true });
+    paint();
   </script>
 </body>
 </html>
