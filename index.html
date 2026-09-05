@@ -10,10 +10,11 @@
   <meta property="og:description" content="We are so excited to announce the arrival! Gift registry inside." />
   <meta property="og:image" content="https://shisler-baby-card.vercel.app/og.jpg" />
   <meta name="twitter:card" content="summary_large_image" />
+  <meta name="theme-color" content="#2eb3c4" />
   <link rel="icon" type="image/svg+xml" href="favicon.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600;1,700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet" />
   <style>
     :root {
       --ink: #3a3228; --muted: #6d6256; --gold: #c4a35a;
@@ -39,16 +40,22 @@
     .frame { position: absolute; inset: 14px 12px 12px; border: 1px solid rgba(196,163,90,.55); pointer-events: none; z-index: 7; }
     .ocean { position: absolute; inset: 0; z-index: 1; pointer-events: none; overflow: hidden; transition: opacity .45s ease, visibility .45s ease; }
     .card.on-finale .ocean { opacity: 0; visibility: hidden; }
+    .sky { position: absolute; inset: 0 0 40%; }
     .sun { position: absolute; top: 9%; right: 12%; width: 58px; height: 58px; border-radius: 50%;
       background: radial-gradient(circle at 35% 35%, #fff6d2, #f0c45a 62%, #e0a83a);
       box-shadow: 0 0 0 8px rgba(240,196,90,.22), 0 0 28px rgba(240,196,90,.45); }
+    .spark { position: absolute; width: 6px; height: 6px; background: #fff; border-radius: 50%; opacity: .7; box-shadow: 0 0 8px #fff; }
+    .spark.a { top: 22%; left: 18%; animation: twinkle 2.4s ease-in-out infinite; }
+    .spark.b { top: 16%; left: 48%; animation: twinkle 2.8s ease-in-out .4s infinite; }
+    .spark.c { top: 30%; right: 28%; animation: twinkle 2.1s ease-in-out .8s infinite; }
+    @keyframes twinkle { 0%,100% { opacity: .25; transform: scale(.7); } 50% { opacity: .95; transform: scale(1.15); } }
     .wave { position: absolute; left: -28%; width: 156%; will-change: transform; }
-    .wave svg { width: 100%; height: 100%; display: block; }
-    .wave-back { bottom: -2%; height: 58%; z-index: 2; }
+    .wave img { width: 100%; height: 100%; object-fit: cover; object-position: center bottom; display: block; pointer-events: none; }
+    .wave-back { bottom: -2%; height: 58%; z-index: 2; filter: saturate(1.06); }
     .wave-front { bottom: -10%; height: 50%; z-index: 4; filter: drop-shadow(0 -8px 12px rgba(20,80,90,.14)); }
-    .shark { position: absolute; left: 16%; bottom: 28%; width: 58%; height: auto; z-index: 3;
+    .shark { position: absolute; left: 16%; bottom: 18%; width: 58%; height: auto; z-index: 3;
       transform-origin: 22% 70%; filter: drop-shadow(0 8px 10px rgba(20,50,60,.22)); will-change: transform, opacity; }
-    .splash { position: absolute; left: 18%; bottom: 42%; width: 50%; height: 16%; z-index: 4; pointer-events: none; opacity: 0; }
+    .splash { position: absolute; left: 18%; bottom: 32%; width: 50%; height: 16%; z-index: 4; pointer-events: none; opacity: 0; }
     .splash i { position: absolute; border-radius: 50%; background: #fff; box-shadow: 0 0 6px rgba(255,255,255,.7); }
     .splash i:nth-child(1) { width: 9px; height: 9px; left: 16%; bottom: 18%; }
     .splash i:nth-child(2) { width: 6px; height: 6px; left: 32%; bottom: 48%; }
@@ -61,43 +68,56 @@
     .bubble.z { width: 12px; height: 12px; left: 44%; bottom: 10%; animation: bubble 6.2s ease-in 1.6s infinite; }
     @keyframes bubble { 0% { transform: translateY(0) scale(.7); opacity: 0; } 18% { opacity: .7; } 100% { transform: translateY(-88px) scale(1.05); opacity: 0; } }
     .scroller { position: relative; z-index: 5; height: 100%; overflow-y: auto; scroll-snap-type: y mandatory; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; }
-    .panel { min-height: 100%; scroll-snap-align: start; scroll-snap-stop: always; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; text-align: center; padding: 56px 28px 240px; position: relative; }
-    .panel.finale { justify-content: flex-end; padding: 28px 28px 42px; background: var(--paper); }
-    .paper-fill {
-      position: absolute; inset: 0; z-index: 0;
-      background-color: var(--paper);
-      background-image:
-        url("paper.jpg"),
-        radial-gradient(circle at 18% 22%, rgba(196,163,90,.12), transparent 42%),
-        repeating-linear-gradient(0deg, rgba(58,50,40,.035) 0 1px, transparent 1px 3px);
-      background-size: cover, auto, auto;
+    .panel {
+      height: 100%; min-height: 100%; scroll-snap-align: start; scroll-snap-stop: always;
+      display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+      text-align: center; padding: 56px 28px 240px; position: relative;
     }
-    .panel.finale .group { position: relative; z-index: 2; }
+    .panel.finale { justify-content: flex-end; padding: 28px 20px 32px; gap: 14px; background: var(--paper); }
+    .paper-fill {
+      position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center;
+      z-index: 0; pointer-events: none; filter: saturate(.45) brightness(.62); opacity: .42;
+    }
+    .paper-mute {
+      position: absolute; inset: 0; z-index: 1; pointer-events: none;
+      background: linear-gradient(180deg, rgba(243,230,208,.22) 0%, rgba(243,230,208,.08) 38%, rgba(40,32,24,.55) 100%);
+    }
+    .portrait {
+      position: relative; display: block; width: auto; max-width: 100%; height: auto;
+      max-height: min(62svh, calc(100% - 176px)); flex: 0 1 auto; min-height: 0;
+      z-index: 1; object-fit: contain; object-position: center; border-radius: 16px;
+      pointer-events: none; box-shadow: 0 14px 32px rgba(40,32,24,.28); margin: 0 auto;
+    }
+    .panel.finale .group {
+      position: relative; z-index: 2; flex: 0 0 auto; width: 100%; padding-top: 18px;
+      background: linear-gradient(to top, rgba(40,32,24,.62) 55%, rgba(40,32,24,.18) 100%);
+      margin: 0 -8px -8px; padding-left: 8px; padding-right: 8px; padding-bottom: 8px; border-radius: 16px;
+    }
     .group { opacity: 0; transform: translateY(18px); transition: opacity .7s ease, transform .7s ease; width: 100%; }
     .panel.on .group { opacity: 1; transform: none; }
-    .kicker { font-size: 11px; letter-spacing: .28em; text-transform: uppercase; color: var(--gold); font-weight: 600; margin-bottom: 12px; font-family: "Cormorant Garamond", Georgia, serif; }
-    h1 { font-family: "Cormorant Garamond", Georgia, serif; font-weight: 500; font-size: clamp(40px, 12.5vw, 54px); line-height: 1.04; text-shadow: 0 1px 0 rgba(255,255,255,.55); }
+    .kicker { font-size: 15px; letter-spacing: .26em; text-transform: uppercase; color: var(--gold); font-weight: 700; margin-bottom: 12px; font-family: "Cormorant Garamond", Georgia, serif; }
+    h1 { font-family: "Cormorant Garamond", Georgia, serif; font-weight: 700; font-size: clamp(46px, 14vw, 64px); line-height: 1.02; text-shadow: 0 1px 0 rgba(255,255,255,.55); }
     .rule { display: flex; width: 100%; height: 5px; margin: 22px 0 16px; }
     .rule i { height: 5px; }
-    .line { font-family: "Cormorant Garamond", Georgia, serif; font-style: italic; font-size: clamp(28px, 8.4vw, 36px); line-height: 1.22; max-width: 14em; margin: 0 auto; }
-    .support { margin: 22px auto 0; font-family: "Cormorant Garamond", Georgia, serif; font-size: clamp(22px, 6.2vw, 28px); line-height: 1.3; max-width: 16em; }
-    .when { font-family: "Cormorant Garamond", Georgia, serif; font-size: 18px; letter-spacing: .18em; text-transform: uppercase; color: var(--muted); }
-    .cta { display: inline-block; margin-top: 16px; background: #3a3228; color: #f6eee0; text-decoration: none; padding: 18px 34px; font-size: 15px; letter-spacing: .16em; text-transform: uppercase; font-weight: 600; border-radius: 999px; box-shadow: 0 0 0 2px var(--gold), 0 10px 24px rgba(58,50,40,.28); min-height: 48px; position: relative; z-index: 3; overflow: hidden; transition: transform .2s ease, background .2s ease; }
+    .line { font-family: "Cormorant Garamond", Georgia, serif; font-style: italic; font-weight: 700; font-size: clamp(34px, 10vw, 44px); line-height: 1.18; max-width: 14em; margin: 0 auto; text-shadow: 0 1px 0 rgba(255,255,255,.5); }
+    .support { margin: 22px auto 0; font-family: "Cormorant Garamond", Georgia, serif; font-weight: 700; font-size: clamp(26px, 7.6vw, 34px); line-height: 1.28; max-width: 16em; }
+    .when { font-family: "Cormorant Garamond", Georgia, serif; font-size: 22px; letter-spacing: .16em; text-transform: uppercase; font-weight: 700; color: #f6eee0; text-shadow: 0 2px 8px rgba(40,32,24,.45); }
+    .cta { display: inline-block; margin-top: 16px; background: #3a3228; color: #f6eee0; text-decoration: none; padding: 20px 36px; font-size: 18px; letter-spacing: .14em; text-transform: uppercase; font-weight: 700; border-radius: 999px; box-shadow: 0 0 0 3px var(--gold), 0 14px 32px rgba(58,50,40,.42); min-height: 56px; position: relative; z-index: 3; overflow: hidden; transition: transform .2s ease, background .2s ease, box-shadow .2s ease; }
     .cta::before { content: ""; position: absolute; inset: 0; background: linear-gradient(110deg, transparent 30%, rgba(255,255,255,.28) 48%, transparent 66%); transform: translateX(-120%); }
     .card.on-finale .cta { animation: cta-breathe 2.4s ease-in-out infinite, cta-pop .7s ease 1; }
     .card.on-finale .cta::before { animation: cta-sheen 3.2s ease-in-out infinite; }
     .cta:hover { transform: scale(1.05); background: #2b251e; }
     .cta:active { transform: scale(.96); animation: none; }
-    @keyframes cta-breathe { 0%,100% { box-shadow: 0 0 0 2px var(--gold), 0 10px 24px rgba(58,50,40,.28); } 50% { box-shadow: 0 0 0 8px rgba(196,163,90,.38), 0 16px 34px rgba(58,50,40,.34); } }
+    @keyframes cta-breathe { 0%,100% { box-shadow: 0 0 0 3px var(--gold), 0 14px 32px rgba(58,50,40,.42); } 50% { box-shadow: 0 0 0 10px rgba(196,163,90,.45), 0 18px 40px rgba(58,50,40,.5); } }
     @keyframes cta-pop { 0% { transform: scale(.9); } 60% { transform: scale(1.07); } 100% { transform: scale(1); } }
     @keyframes cta-sheen { 0%,55% { transform: translateX(-120%); } 75%,100% { transform: translateX(120%); } }
-    .fine { margin-top: 12px; font-size: 16px; color: var(--muted); font-family: "Cormorant Garamond", Georgia, serif; }
-    .hint { margin-top: 18px; font-family: "Cormorant Garamond", Georgia, serif; font-size: 13px; letter-spacing: .22em; text-transform: uppercase; color: var(--muted); }
+    .fine { margin-top: 14px; font-size: 20px; font-weight: 700; color: #f6eee0; font-family: "Cormorant Garamond", Georgia, serif; text-shadow: 0 2px 8px rgba(40,32,24,.45); }
+    .hint { margin-top: 18px; font-family: "Cormorant Garamond", Georgia, serif; font-size: 16px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: var(--muted); }
     .hint b { display: block; width: 10px; height: 10px; margin: 10px auto 0; border-right: 1.5px solid var(--gold); border-bottom: 1.5px solid var(--gold); transform: rotate(45deg); animation: chev 1.6s ease-in-out infinite; }
     @keyframes chev { 0%,100% { opacity: .3; transform: rotate(45deg) translate(-3px,-3px); } 50% { opacity: 1; transform: rotate(45deg) translate(2px,2px); } }
     @media (prefers-reduced-motion: reduce) {
       .group { opacity: 1; transform: none; }
-      .hint b, .cta, .cta::before, .bubble { animation: none; }
+      .hint b, .cta, .cta::before, .spark, .bubble { animation: none; }
       .scroller { scroll-behavior: auto; }
     }
   </style>
@@ -108,21 +128,15 @@
       <div class="stripe" aria-hidden="true"><i class="r"></i><i class="g"></i><i class="n"></i></div>
       <div class="frame"></div>
       <div class="ocean" aria-hidden="true">
-        <span class="sun"></span>
-        <div class="wave wave-back" id="back">
-          <svg viewBox="0 0 1440 320" preserveAspectRatio="none" aria-hidden="true">
-            <path fill="#127a86" d="M0,140 C120,70 240,210 360,140 C480,70 600,210 720,140 C840,70 960,210 1080,140 C1200,70 1320,190 1440,130 L1440,320 L0,320 Z"/>
-            <path fill="#1a8f9a" d="M0,190 C150,130 300,240 450,190 C600,140 750,250 900,190 C1050,130 1200,240 1440,180 L1440,320 L0,320 Z"/>
-          </svg>
+        <div class="sky">
+          <span class="sun"></span>
+          <span class="spark a"></span>
+          <span class="spark b"></span>
+          <span class="spark c"></span>
         </div>
+        <div class="wave wave-back" id="back"><img src="wave-back.webp" alt="" /></div>
         <img class="shark" id="shark" src="shark.webp" alt="" />
-        <div class="wave wave-front" id="front">
-          <svg viewBox="0 0 1440 280" preserveAspectRatio="none" aria-hidden="true">
-            <path fill="#f7fbff" d="M0,88 C90,40 180,130 270,88 C360,46 450,130 540,88 C630,46 720,130 810,88 C900,46 990,130 1080,88 C1170,46 1260,120 1440,70 L1440,110 C1260,150 1170,86 1080,118 C990,150 900,86 810,118 C720,150 630,86 540,118 C450,150 360,86 270,118 C180,150 90,80 0,118 Z"/>
-            <path fill="#5ecbd3" d="M0,108 C90,60 180,150 270,108 C360,66 450,150 540,108 C630,66 720,150 810,108 C900,66 990,150 1080,108 C1170,66 1260,140 1440,90 L1440,280 L0,280 Z"/>
-            <path fill="#3bb8c2" d="M0,170 C180,130 360,210 540,170 C720,130 900,210 1080,170 C1260,130 1380,190 1440,170 L1440,280 L0,280 Z"/>
-          </svg>
-        </div>
+        <div class="wave wave-front" id="front"><img src="wave-front.webp" alt="" /></div>
         <div class="splash" id="splash"><i></i><i></i><i></i><i></i><i></i></div>
         <span class="bubble x"></span><span class="bubble y"></span><span class="bubble z"></span>
       </div>
@@ -143,7 +157,9 @@
           </div>
         </section>
         <section class="panel finale" data-panel>
-          <div class="paper-fill"></div>
+          <img class="paper-fill" src="card.jpg" alt="" />
+          <div class="paper-mute"></div>
+          <img class="portrait" src="portrait.jpg" alt="" />
           <div class="group">
             <p class="when">November 2026 · Guåhan</p>
             <a class="cta" id="cta" href="https://www.amazon.com/baby-reg/ryan-shisler-october-2026-talofofo/388HK8HF0Q0DZ?ref_=cm_sw_r_apann_dp_VESDWS20WCT4361KP9RY&language=en-US">Open gift registry</a>
