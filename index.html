@@ -43,7 +43,7 @@
       background: radial-gradient(circle at 35% 35%, #fff6d2, #f0c45a 62%, #e0a83a);
       box-shadow: 0 0 0 8px rgba(240,196,90,.22), 0 0 28px rgba(240,196,90,.45); }
     .wave { position: absolute; left: -28%; width: 156%; will-change: transform; }
-    .wave img { width: 100%; height: 100%; object-fit: cover; object-position: center bottom; display: block; }
+    .wave svg { width: 100%; height: 100%; display: block; }
     .wave-back { bottom: -2%; height: 58%; z-index: 2; }
     .wave-front { bottom: -10%; height: 50%; z-index: 4; filter: drop-shadow(0 -8px 12px rgba(20,80,90,.14)); }
     .shark { position: absolute; left: 16%; bottom: 28%; width: 58%; height: auto; z-index: 3;
@@ -63,7 +63,15 @@
     .scroller { position: relative; z-index: 5; height: 100%; overflow-y: auto; scroll-snap-type: y mandatory; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; }
     .panel { min-height: 100%; scroll-snap-align: start; scroll-snap-stop: always; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; text-align: center; padding: 56px 28px 240px; position: relative; }
     .panel.finale { justify-content: flex-end; padding: 28px 28px 42px; background: var(--paper); }
-    .paper-fill { position: absolute; inset: 0; background: var(--paper) url("paper.jpg") center / cover no-repeat; z-index: 0; }
+    .paper-fill {
+      position: absolute; inset: 0; z-index: 0;
+      background-color: var(--paper);
+      background-image:
+        url("paper.jpg"),
+        radial-gradient(circle at 18% 22%, rgba(196,163,90,.12), transparent 42%),
+        repeating-linear-gradient(0deg, rgba(58,50,40,.035) 0 1px, transparent 1px 3px);
+      background-size: cover, auto, auto;
+    }
     .panel.finale .group { position: relative; z-index: 2; }
     .group { opacity: 0; transform: translateY(18px); transition: opacity .7s ease, transform .7s ease; width: 100%; }
     .panel.on .group { opacity: 1; transform: none; }
@@ -101,9 +109,20 @@
       <div class="frame"></div>
       <div class="ocean" aria-hidden="true">
         <span class="sun"></span>
-        <div class="wave wave-back" id="back"><img src="wave-back.webp" alt="" /></div>
+        <div class="wave wave-back" id="back">
+          <svg viewBox="0 0 1440 320" preserveAspectRatio="none" aria-hidden="true">
+            <path fill="#127a86" d="M0,140 C120,70 240,210 360,140 C480,70 600,210 720,140 C840,70 960,210 1080,140 C1200,70 1320,190 1440,130 L1440,320 L0,320 Z"/>
+            <path fill="#1a8f9a" d="M0,190 C150,130 300,240 450,190 C600,140 750,250 900,190 C1050,130 1200,240 1440,180 L1440,320 L0,320 Z"/>
+          </svg>
+        </div>
         <img class="shark" id="shark" src="shark.webp" alt="" />
-        <div class="wave wave-front" id="front"><img src="wave-front.webp" alt="" /></div>
+        <div class="wave wave-front" id="front">
+          <svg viewBox="0 0 1440 280" preserveAspectRatio="none" aria-hidden="true">
+            <path fill="#f7fbff" d="M0,88 C90,40 180,130 270,88 C360,46 450,130 540,88 C630,46 720,130 810,88 C900,46 990,130 1080,88 C1170,46 1260,120 1440,70 L1440,110 C1260,150 1170,86 1080,118 C990,150 900,86 810,118 C720,150 630,86 540,118 C450,150 360,86 270,118 C180,150 90,80 0,118 Z"/>
+            <path fill="#5ecbd3" d="M0,108 C90,60 180,150 270,108 C360,66 450,150 540,108 C630,66 720,150 810,108 C900,66 990,150 1080,108 C1170,66 1260,140 1440,90 L1440,280 L0,280 Z"/>
+            <path fill="#3bb8c2" d="M0,170 C180,130 360,210 540,170 C720,130 900,210 1080,170 C1260,130 1380,190 1440,170 L1440,280 L0,280 Z"/>
+          </svg>
+        </div>
         <div class="splash" id="splash"><i></i><i></i><i></i><i></i><i></i></div>
         <span class="bubble x"></span><span class="bubble y"></span><span class="bubble z"></span>
       </div>
