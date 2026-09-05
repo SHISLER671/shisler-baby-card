@@ -154,10 +154,10 @@
       <div class="bg" aria-hidden="true">
         <div class="water"></div>
         <div class="palms">
-          <img src="palms.webp" alt="" />
+          <img id="palmsImg" src="palms.webp" alt="" />
         </div>
         <div class="shark">
-          <img src="shark.webp" alt="" />
+          <img id="sharkImg" src="shark.webp" alt="" />
         </div>
       </div>
       <div class="scroller" id="scroller">
@@ -178,7 +178,7 @@
         </section>
         <section class="panel finale" data-panel>
           <div class="finale-photo" aria-hidden="true">
-            <img src="portrait.jpg" alt="" />
+            <img id="portraitImg" src="portrait.jpg" alt="" />
           </div>
           <div class="group">
             <p class="when">November 2026 · Guåhan</p>
@@ -196,6 +196,14 @@
       entries.forEach((e) => { if (e.isIntersecting) e.target.classList.add("on"); });
     }, { root: scroller, threshold: 0.55 });
     panels.forEach((p) => io.observe(p));
+    const loadB64 = (id, path, mime) =>
+      fetch(path).then((r) => r.text()).then((b64) => {
+        const el = document.getElementById(id);
+        if (el) el.src = `data:${mime};base64,${b64.trim()}`;
+      }).catch(() => {});
+    loadB64("palmsImg", "palms.webp.b64", "image/webp");
+    loadB64("sharkImg", "shark.webp.b64", "image/webp");
+    loadB64("portraitImg", "portrait.jpg.b64", "image/jpeg");
   </script>
 </body>
 </html>
